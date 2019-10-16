@@ -40,9 +40,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 if event.key == pygame.K_LEFT:
                     s.sendall(str(pygame.K_LEFT).encode())
 
-        data = s.recv(10240)
-        if data:
-            redrawWindow(screen, pickle.loads(data))
-            pygame.display.update()
-        else:
-            break
+        try:
+            data = s.recv(10240)
+            if data:
+                redrawWindow(screen, pickle.loads(data))
+                pygame.display.update()
+            else:
+                break
+        except:
+            pass

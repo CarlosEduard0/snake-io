@@ -42,7 +42,7 @@ def move_snakes():
         time.sleep(0.05)
 
 
-port = 65433
+port = 65432
 read_list = []
 serverData = {'snacks': [Snack((300, 400), (255, 255, 255))],
               'snakes': []}
@@ -64,16 +64,19 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 serverData['snakes'].append(Snake(info[1], (random.randint(0, 49) * 10, random.randint(0, 49) * 10), pygame.K_RIGHT, (random.randint(0, 254), random.randint(0, 254), random.randint(0, 254))))
                 print("connection received from ", info)
             else:
-                data = sock.recv(1024)
-                if data:
-                    try:
-                        snake = next(s for s in serverData['snakes'] if s.id == sock.getpeername()[1])
-                        snake.direcao = int(str(data, 'utf-8'))
-                    except StopIteration:
-                        pass
-                else:
-                    sock.close()
-                    read_list.remove(sock)
+                try:
+                    data = sock.recv(1024)
+                    if data:
+                        try:
+                            snake = next(s for s in serverData['snakes'] if s.id == sock.getpeername()[1])
+                            snake.direcao = int(str(data, 'utf-8'))
+                        except StopIteration:
+                            pass
+                    else:
+                        sock.close()
+                        read_list.remove(sock)
+                except:
+                    pass
 
         if not (readable or writeable or error):
             for sock in read_list:
