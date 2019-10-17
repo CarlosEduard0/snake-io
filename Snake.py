@@ -26,4 +26,4 @@ class Snake:
             self.body[0] = ((self.body[0][0] - 10) % 500, self.body[0][1])
 
     def grow(self):
-        self.body.append((0, 0))
+        self.body.append((self.body[len(self.body) - 1][0], self.body[len(self.body) - 1][1]))
