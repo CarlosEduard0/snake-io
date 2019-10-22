@@ -14,32 +14,28 @@ from Snake import Snake
 
 def gen_snack():
     global serverData
-    while True:
-        snack = Snack()
-        if not (snack in serverData['snacks']):
-            serverData['snacks'].append(snack)
-        time.sleep(1)
+    snack = Snack()
+    if not (snack in serverData['snacks']):
+        serverData['snacks'].append(snack)
 
 
 def move_snakes():
     global serverData
-    while True:
-        for snake in serverData['snakes']:
-            snake.move()
-            snack = Snack(snake.body[0])
-            if any(i == snack for i in serverData['snacks']):
-                snake.grow()
-                serverData['snacks'].remove(snack)
+    for snake in serverData['snakes']:
+        snake.move()
+        snack = Snack(snake.body[0])
+        if any(i == snack for i in serverData['snacks']):
+            snake.grow()
+            serverData['snacks'].remove(snack)
 
-            snakes = []
-            for i in [x for x in serverData['snakes'] if x.id != snake.id]:
-                for j in i.body:
-                    snakes.append(j)
-            if snake.body[0] in snake.body[1:] or snake.body[0] in snakes:
-                for position in snake.body:
-                    serverData['snacks'].append(Snack(position))
-                serverData['snakes'].remove(snake)
-        time.sleep(0.05)
+        snakes = []
+        for i in [x for x in serverData['snakes'] if x.id != snake.id]:
+            for j in i.body:
+                snakes.append(j)
+        if snake.body[0] in snake.body[1:] or snake.body[0] in snakes:
+            for position in snake.body:
+                serverData['snacks'].append(Snack(position))
+            serverData['snakes'].remove(snake)
 
 
 port = 65432
@@ -52,8 +48,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.bind(('', port))
     s.listen(5)
     read_list.append(s)
-    threading.Thread(target=gen_snack).start()
-    threading.Thread(target=move_snakes).start()
+    cont = 0
     while True:
         readable, writeable, error = select.select(read_list, [], [], 0.05)
         for sock in readable:
@@ -80,4 +75,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         if not (readable or writeable or error):
             for sock in read_list:
                 if not (sock is s):
+                    if cont > 10:
+                        move_snakes()
+                    if cont > 50:
+                        gen_snack()
+                        cont = 0
                     sock.send(pickle.dumps(serverData))
+                    cont += 1
