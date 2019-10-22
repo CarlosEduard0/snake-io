@@ -37,7 +37,6 @@ def move_snakes():
                 serverData['snacks'].append(Snack(position))
             serverData['snakes'].remove(snake)
 
-
 port = 65432
 read_list = []
 serverData = {'snacks': [],
