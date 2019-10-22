@@ -44,9 +44,8 @@ def move_snakes():
 
 port = 65432
 read_list = []
-serverData = {'snacks': [Snack((300, 400), (255, 255, 255))],
+serverData = {'snacks': [],
               'snakes': []}
-              # 'snakes': [Snake(30, (100, 100), pygame.K_RIGHT, (0,0,0)),Snake(40, (200, 200), pygame.K_RIGHT, (0,0,0)),Snake(50, (200, 200), pygame.K_RIGHT, (0,0,0))]}
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.setblocking(False)
